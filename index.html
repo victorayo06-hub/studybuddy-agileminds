@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f8fc">
+<title>StudyBuddy | Agile Minds</title>
+<style>
+:root{
+  --brand:#5146d8;--brand-dark:#4036bd;--brand-soft:#efeeff;
+  --ink:#172033;--muted:#697386;--line:#e5e8f0;--surface:#fff;
+  --page:#f6f7fb;--green:#138a62;--green-soft:#e8f7f0;
+  --amber:#a96809;--amber-soft:#fff5df;--red:#c24141;
+  --shadow:0 8px 24px rgba(24,34,58,.06);--radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--page)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(81,70,216,.22);outline-offset:2px}
+.app-header{height:72px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;gap:18px;position:relative;z-index:5}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-mark{width:39px;height:39px;border-radius:12px;background:var(--brand);color:white;display:grid;place-items:center;font-weight:800;letter-spacing:-.04em;box-shadow:0 5px 12px rgba(81,70,216,.2)}
+.brand-name{font-size:19px;font-weight:800;letter-spacing:-.04em}
+.brand-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.header-actions{display:flex;align-items:center;gap:10px}
+.user-select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 11px;color:var(--ink);max-width:210px}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:.16s ease}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 4px 10px rgba(81,70,216,.16)}
+.btn-primary:hover{background:var(--brand-dark);transform:translateY(-1px)}
+.btn-secondary{background:var(--brand-soft);color:var(--brand)}
+.btn-secondary:hover{background:#e5e3ff}
+.btn-quiet{background:#fff;color:var(--muted);border:1px solid var(--line)}
+.btn-quiet:hover{background:#f8f9fc;color:var(--ink)}
+.btn-small{padding:7px 10px;font-size:12px}
+.icon-btn{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--muted);display:grid;place-items:center}
+.app-shell{height:calc(100vh - 72px);min-height:520px;display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1600px;margin:0 auto}
+.groups-sidebar{background:#fff;border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:18px;overflow-y:auto}
+.section-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--muted)}
+.jira-tag{font-size:10px;font-weight:800;color:#596176;background:#f1f2f7;border:1px solid #e5e7ef;padding:4px 7px;border-radius:6px;white-space:nowrap}
+.group-list{display:flex;flex-direction:column;gap:9px}
+.group-card{width:100%;text-align:left;border:1px solid transparent;background:#fff;border-radius:12px;padding:12px;transition:.16s}
+.group-card:hover{border-color:#d9dcf5;background:#fafaff}
+.group-card.active{background:var(--brand-soft);border-color:#c9c5ff}
+.group-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.group-card-name{font-size:13px;font-weight:750;line-height:1.35}
+.group-card-meta{font-size:11px;color:var(--muted);margin-top:5px;display:flex;justify-content:space-between;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:750;white-space:nowrap}
+.pill-green{background:var(--green-soft);color:var(--green)}
+.pill-amber{background:var(--amber-soft);color:var(--amber)}
+.pill-purple{background:var(--brand-soft);color:var(--brand)}
+.join-card{margin-top:auto;border-top:1px solid var(--line);padding-top:17px;display:flex;flex-direction:column;gap:9px}
+.join-card p{font-size:12px;line-height:1.45;color:var(--muted);margin:0}
+.field{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:#fff;color:var(--ink);font-size:13px;min-width:0}
+.field::placeholder{color:#9aa2b1}
+.join-row{display:flex;gap:7px}
+.join-row .field{flex:1}
+.workspace{min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.group-header{background:#fff;border-bottom:1px solid var(--line);padding:19px 25px 15px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.group-heading{min-width:0}
+.group-heading h1{font-size:19px;letter-spacing:-.035em;margin:0;font-weight:800;overflow-wrap:anywhere}
+.group-heading p{margin:5px 0 0;font-size:12px;color:var(--muted)}
+.group-header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.invite-code{font-size:11px;color:var(--muted);background:#f6f7fb;border:1px solid var(--line);padding:7px 9px;border-radius:8px}
+.desktop-tabs{display:flex;gap:6px;padding:13px 25px 0;background:#fff;border-bottom:1px solid var(--line)}
+.tab-btn{border:0;background:transparent;color:var(--muted);padding:10px 13px 12px;font-size:13px;font-weight:750;border-bottom:2px solid transparent}
+.tab-btn:hover{color:var(--brand)}
+.tab-btn.active{color:var(--brand);border-bottom-color:var(--brand)}
+.tab-count{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#f0f1f6;color:#697386;font-size:10px;margin-left:5px}
+.views{flex:1;min-height:0;overflow:hidden;position:relative}
+.view{height:100%;display:none;min-height:0}
+.view.active{display:flex}
+.chat-view{flex-direction:column}
+.pinned-banner{background:#fff9e9;border-bottom:1px solid #f5e6bf;padding:9px 25px;color:#815c17;font-size:12px;line-height:1.45;display:flex;align-items:center;gap:8px}
+.pinned-label{font-weight:800;white-space:nowrap}
+.messages{flex:1;overflow-y:auto;padding:22px 26px;display:flex;flex-direction:column;gap:15px}
+.message-row{display:flex;gap:10px;max-width:min(760px,88%)}
+.message-row.own{align-self:flex-end;flex-direction:row-reverse}
+.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:white;font-size:11px;font-weight:800;flex:0 0 36px;position:relative}
+.avatar-status{position:absolute;width:10px;height:10px;border-radius:50%;right:-1px;bottom:0;border:2px solid #fff;background:#16a36b}
+.avatar-status.away{background:#e6a23c}
+.message-content{min-width:0}
+.message-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 5px;font-size:11px;color:var(--muted)}
+.message-name{font-weight:800;color:var(--ink)}
+.message-bubble{background:#fff;border:1px solid var(--line);border-radius:4px 14px 14px 14px;padding:10px 13px;font-size:13px;line-height:1.5;box-shadow:0 2px 5px rgba(20,30,50,.03);overflow-wrap:anywhere}
+.message-row.own .message-bubble{background:var(--brand);color:#fff;border-color:var(--brand);border-radius:14px 4px 14px 14px}
+.message-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:10px;opacity:.7;margin-top:6px}
+.text-action{border:0;background:transparent;color:inherit;text-decoration:underline;font-size:10px;padding:0}
+.chat-composer{background:#fff;border-top:1px solid var(--line);padding:13px 22px;display:flex;gap:9px}
+.chat-composer .field{flex:1}
+.members-view,.resources-view,.groups-mobile-view{overflow-y:auto;padding:23px 25px;flex-direction:column;gap:16px}
+.panel-title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.panel-title{font-size:16px;font-weight:800;letter-spacing:-.025em;margin:0}
+.panel-subtitle{font-size:12px;color:var(--muted);margin:5px 0 0}
+.member-tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.member-search{width:min(280px,100%)}
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.member-card{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:12px;min-width:0}
+.member-card:hover{border-color:#d5d2ff;box-shadow:var(--shadow)}
+.member-info{min-width:0;flex:1}
+.member-name{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.member-meta{font-size:11px;color:var(--muted);margin-top:4px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.role-tag{font-size:10px;font-weight:750;padding:3px 7px;border-radius:999px;background:#f1f2f7;color:#596176}
+.member-status{font-size:10px;color:var(--green);font-weight:700}
+.member-status.away{color:var(--amber)}
+.resource-form{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(120px,.7fr) minmax(180px,1.5fr) auto;gap:9px;align-items:center}
+.resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.resource-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;display:flex;flex-direction:column;gap:9px;box-shadow:0 2px 7px rgba(20,30,50,.025)}
+.resource-type{align-self:flex-start;background:var(--brand-soft);color:var(--brand);font-size:10px;font-weight:800;padding:4px 8px;border-radius:6px}
+.resource-title{font-size:13px;font-weight:800;overflow-wrap:anywhere}
+.resource-detail{font-size:12px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
+.resource-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;font-size:10px;color:var(--muted)}
+.resource-link{color:var(--brand);font-weight:750;text-decoration:none}
+.empty-state{background:#fff;border:1px dashed #d8dce8;border-radius:14px;padding:28px;text-align:center;color:var(--muted);font-size:13px;line-height:1.5}
+.empty-state strong{display:block;color:var(--ink);margin-bottom:5px}
+.groups-mobile-view{display:none}
+.mobile-group-list{display:flex;flex-direction:column;gap:10px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.48);display:none;align-items:center;justify-content:center;padding:18px;z-index:30}
+.modal-backdrop.open{display:flex}
+.modal{width:min(440px,100%);background:#fff;border-radius:18px;padding:21px;box-shadow:0 24px 70px rgba(15,23,42,.22);display:flex;flex-direction:column;gap:14px}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal h2{font-size:18px;margin:0}
+.modal p{font-size:12px;color:var(--muted);line-height:1.45;margin:5px 0 0}
+.form-field{display:flex;flex-direction:column;gap:6px}
+.form-field label{font-size:12px;font-weight:750;color:#4e586b}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#182033;color:#fff;padding:11px 15px;border-radius:11px;font-size:12px;font-weight:650;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:calc(100% - 30px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.demo-note{font-size:10px;color:var(--muted);padding:8px 25px;background:#fafbfe;border-top:1px solid var(--line)}
+.mobile-nav{display:none}
+button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:1000px){
+  .app-shell{grid-template-columns:235px minmax(0,1fr)}
+  .resource-form{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+  html,body{height:100%;overflow:hidden}
+  .app-header{height:64px;padding:0 14px;gap:8px}
+  .brand-mark{width:35px;height:35px;border-radius:11px}
+  .brand-name{font-size:17px}
+  .brand-sub{display:none}
+  .header-actions{gap:7px}
+  .user-select{max-width:132px;padding:8px 7px;font-size:11px}
+  .new-group-label{display:none}
+  .header-actions .btn{width:38px;height:38px;padding:0;font-size:18px}
+  .app-shell{display:block;height:calc(100dvh - 64px);min-height:0}
+  .groups-sidebar{display:none}
+  .workspace{height:100%;overflow:hidden;padding-bottom:66px}
+  .group-header{padding:13px 15px 11px;gap:8px}
+  .group-heading h1{font-size:16px}
+  .group-heading p{font-size:10px;max-width:62vw;line-height:1.35}
+  .group-header-actions .invite-code{display:none}
+  .group-header-actions .btn{padding:8px 9px;font-size:11px}
+  .desktop-tabs{display:none}
+  .views{overflow:hidden}
+  .messages{padding:15px 13px;gap:12px}
+  .message-row{max-width:94%;gap:7px}
+  .avatar{width:31px;height:31px;flex-basis:31px;font-size:10px}
+  .message-bubble{font-size:12px;padding:9px 11px}
+  .message-meta{font-size:10px}
+  .pinned-banner{padding:8px 13px;font-size:11px}
+  .chat-composer{padding:10px 11px;gap:7px}
+  .chat-composer .btn{padding:9px 11px;font-size:11px}
+  .chat-composer .field{font-size:12px}
+  .members-view,.resources-view,.groups-mobile-view{padding:16px 13px;gap:13px}
+  .member-grid{grid-template-columns:1fr}
+  .member-search{width:100%}
+  .resource-form{grid-template-columns:1fr;padding:12px}
+  .resource-grid{grid-template-columns:1fr}
+  .groups-mobile-view{display:none}
+  .groups-mobile-view.active{display:flex}
+  .mobile-group-list{width:100%}
+  .mobile-join-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:9px}
+  .mobile-nav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;bottom:0;left:0;right:0;height:66px;background:rgba(255,255,255,.97);border-top:1px solid var(--line);padding:6px 7px max(6px,env(safe-area-inset-bottom));z-index:15;backdrop-filter:blur(12px)}
+  .mobile-nav button{border:0;background:transparent;color:#81899a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:750;border-radius:10px}
+  .mobile-nav button.active{color:var(--brand);background:var(--brand-soft)}
+  .mobile-nav .nav-icon{font-size:17px;line-height:1}
+  .demo-note{display:none}
+  .toast{bottom:78px}
+}
+@media(max-width:380px){
+  .user-select{max-width:108px}
+  .group-header-actions .btn{font-size:0;width:36px}
+  .group-header-actions .btn .btn-symbol{font-size:16px}
+  .group-heading p{max-width:55vw}
+}
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-mark">SB</div>
+    <div><div class="brand-name">StudyBuddy</div><div class="brand-sub">Learn together. Achieve together.</div></div>
+  </div>
+  <div class="header-actions">
+    <select id="activeUserSelect" class="user-select" aria-label="Select demo user"></select>
+    <button class="btn btn-primary" id="newGroupBtn" type="button"><span class="btn-symbol">＋</span><span class="new-group-label">New group</span></button>
+  </div>
+</header>
+
+<div class="app-shell">
+  <aside class="groups-sidebar">
+    <div class="section-heading"><span class="eyebrow">Your study groups</span><span class="jira-tag">SCRUM-46 / 47</span></div>
+    <div id="groupListDesktop" class="group-list"></div>
+    <div class="join-card">
+      <div class="section-heading"><span class="eyebrow">Join with a code</span><span class="jira-tag">SCRUM-46</span></div>
+      <p>Have an invitation code? Enter it to join a study group.</p>
+      <div class="join-row"><input id="inviteCodeDesktop" class="field" type="text" placeholder="e.g. AGILE26" autocomplete="off"><button id="joinDesktopBtn" class="btn btn-secondary" type="button">Join</button></div>
+      <div id="joinFeedbackDesktop" aria-live="polite" style="font-size:11px;color:var(--brand)"></div>
+    </div>
+  </aside>
+
+  <main class="workspace">
+    <div class="group-header">
+      <div class="group-heading">
+        <h1 id="currentGroupTitle">AgileMinds Project Management</h1>
+        <p id="currentGroupDesc">Agile & Scrum Software Delivery</p>
+      </div>
+      <div class="group-header-actions">
+        <span class="invite-code" id="inviteCodeLabel">Code: AGILE26</span>
+        <button class="btn btn-secondary btn-small" id="joinCurrentBtn" type="button" hidden>Join group</button>
+      </div>
+    </div>
+
+    <nav class="desktop-tabs" aria-label="Study group sections">
+      <button class="tab-btn active" data-view="chat" type="button">Group chat <span class="tab-count" id="chatCount">0</span><span class="jira-tag">SCRUM-44</span></button>
+      <button class="tab-btn" data-view="members" type="button">Members <span class="tab-count" id="memberTabCount">0</span><span class="jira-tag">SCRUM-45</span></button>
+      <button class="tab-btn" data-view="resources" type="button">Resources <span class="jira-tag">SCRUM-43</span></button>
+    </nav>
+
+    <div class="views">
+      <section class="view groups-mobile-view" id="groupsView">
+        <div class="panel-title-row"><div><h2 class="panel-title">Your study groups</h2><p class="panel-subtitle">Choose a group or join with an invitation code.</p></div><span class="jira-tag">SCRUM-46 / 47</span></div>
+        <div id="groupListMobile" class="mobile-group-list"></div>
+        <div class="mobile-join-card">
+          <div class="section-heading"><span class="eyebrow">Join with a code</span><span class="jira-tag">SCRUM-46</span></div>
+          <input id="inviteCodeMobile" class="field" type="text" placeholder="Enter invitation code" autocomplete="off">
+          <button id="joinMobileBtn" class="btn btn-primary" type="button">Join study group</button>
+          <div id="joinFeedbackMobile" aria-live="polite" style="font-size:11px;color:var(--brand)"></div>
+        </div>
+      </section>
+
+      <section class="view chat-view active" id="chatView">
+        <div class="pinned-banner"><span class="pinned-label">📌 Announcement</span><span id="pinnedText">Welcome to the AgileMinds study group. Share updates and learn together.</span></div>
+        <div class="messages" id="messagesList" aria-live="polite"></div>
+        <form class="chat-composer" id="messageForm">
+          <input class="field" id="messageInput" type="text" placeholder="Write a message..." autocomplete="off" required>
+          <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+      </section>
+
+      <section class="view members-view" id="membersView">
+        <div class="panel-title-row">
+          <div><h2 class="panel-title">Group members</h2><p class="panel-subtitle">See who is part of this study group.</p></div>
+          <span class="jira-tag">SCRUM-45 · Member Directory</span>
+        </div>
+        <div class="member-tools">
+          <input id="memberSearch" class="field member-search" type="search" placeholder="Search members..." autocomplete="off">
+          <span class="pill pill-purple" id="memberCountLabel">0 members</span>
+        </div>
+        <div id="memberList" class="member-grid"></div>
+      </section>
+
+      <section class="view resources-view" id="resourcesView">
+        <div class="panel-title-row"><div><h2 class="panel-title">Learning resources</h2><p class="panel-subtitle">Share notes, study guides and useful links with your group.</p></div><span class="jira-tag">SCRUM-43</span></div>
+        <form class="resource-form" id="resourceForm">
+          <input class="field" id="resTitle" type="text" placeholder="Resource title" required>
+          <select class="field" id="resType"><option>Lecture Notes</option><option>Study Guide</option><option>Past Exam</option><option>Reference Link</option></select>
+          <input class="field" id="resDetail" type="text" placeholder="Paste a URL or add a short description" required>
+          <button class="btn btn-primary" type="submit">＋ Share resource</button>
+        </form>
+        <div id="resourceGrid" class="resource-grid"></div>
+      </section>
+    </div>
+    <div class="demo-note">StudyBuddy academic prototype · Sample data only · Changes are stored in this browser, not on a live server.</div>
+  </main>
+</div>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <button type="button" data-view="groups" class="active"><span class="nav-icon">▦</span><span>Groups</span></button>
+  <button type="button" data-view="chat"><span class="nav-icon">◌</span><span>Chat</span></button>
+  <button type="button" data-view="members"><span class="nav-icon">♙</span><span>Members</span></button>
+  <button type="button" data-view="resources"><span class="nav-icon">▤</span><span>Resources</span></button>
+</nav>
+
+<div class="modal-backdrop" id="createModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <form class="modal" id="createGroupForm">
+    <div class="modal-head"><div><h2 id="modalTitle">Create a study group</h2><p>Set up a space where classmates can learn together.</p></div><button class="icon-btn" id="closeModalBtn" type="button" aria-label="Close">✕</button></div>
+    <div class="form-field"><label for="newGroupName">Group name</label><input class="field" id="newGroupName" type="text" placeholder="e.g. Biology Study Group" required maxlength="60"></div>
+    <div class="form-field"><label for="newGroupSubject">Course or subject</label><input class="field" id="newGroupSubject" type="text" placeholder="e.g. Biology 101" maxlength="60"></div>
+    <div class="form-field"><label for="newGroupPrivacy">Group visibility</label><select class="field" id="newGroupPrivacy"><option value="Public">Public</option><option value="Invite-Only">Invite only</option></select></div>
+    <div class="modal-actions"><button class="btn btn-quiet" id="cancelModalBtn" type="button">Cancel</button><button class="btn btn-primary" type="submit">Create group</button></div>
+  </form>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const roster = [
+  {id:"instructor",name:"Course Instructor",initials:"CI",role:"Instructor",color:"#a96809",status:"online",ticket:"Course Lead",isInstructor:true},
+  {id:"fatusa",name:"Fatusa Takaria",initials:"FT",role:"Member",color:"#5146d8",status:"online",ticket:"SCRUM-43"},
+  {id:"austin",name:"Austin Tiikana",initials:"AT",role:"Member",color:"#138a62",status:"online",ticket:"SCRUM-44"},
+  {id:"victor",name:"Victor Ayo",initials:"VA",role:"Member",color:"#5146d8",status:"online",ticket:"SCRUM-45"},
+  {id:"samuel",name:"Samuel James",initials:"SJ",role:"Member",color:"#087f70",status:"online",ticket:"SCRUM-46"},
+  {id:"lulu",name:"Lulu",initials:"LU",role:"Member",color:"#7555bf",status:"online",ticket:"SCRUM-47"},
+  {id:"giordano",name:"Giordano Perez Paz",initials:"GP",role:"Member",color:"#2876ad",status:"online",ticket:"Team Member"},
+  {id:"ikechukwu",name:"Ikechukwu Azunnaya",initials:"IA",role:"Member",color:"#b13a63",status:"away",ticket:"Team Member"}
+];
+
+const initialGroups = [
+  {
+    id:"agileminds",name:"AgileMinds Project Management",subject:"Agile & Scrum Software Delivery",
+    privacy:"Public",code:"AGILE26",joined:true,pinned:"Welcome to AgileMinds Project Management! Check Jira tickets SCRUM-43 through SCRUM-47 for sprint deliverables.",
+    members:roster.map(u=>u.id),
+    messages:[
+      {senderId:"instructor",text:"Welcome everyone to the AgileMinds Project Management group! Let's review our current sprint progress on SCRUM-43 through SCRUM-47.",time:"09:00 AM"},
+      {senderId:"lulu",text:"Hi everyone! I am currently working on SCRUM-47 to implement study group creation.",time:"09:04 AM"},
+      {senderId:"samuel",text:"I have SCRUM-46 in progress for joining existing study groups using invite codes or the group directory.",time:"09:07 AM"},
+      {senderId:"victor",text:"SCRUM-45 is underway so all group members and online statuses display clearly in the directory.",time:"09:10 AM"},
+      {senderId:"austin",text:"Group messaging for SCRUM-44 is active here! Let me know if we need pinned announcements.",time:"09:12 AM"},
+      {senderId:"fatusa",text:"I am preparing SCRUM-43 so we can share educational notes and project management guides directly in the group.",time:"09:15 AM"},
+      {senderId:"giordano",text:"Having everyone's names and Jira tasks organized in one workspace makes tracking easier.",time:"09:18 AM"},
+      {senderId:"ikechukwu",text:"Ready to test the educational resource sharing tab once we upload our sprint notes.",time:"09:20 AM"}
+    ],
+    resources:[
+      {title:"AgileMinds Sprint Backlog",type:"Jira Template",detail:"Reference for SCRUM-43 to SCRUM-47 and sprint priorities.",authorId:"instructor"},
+      {title:"Scrum Roles & Ceremonies Study Guide",type:"Study Guide",detail:"Notes covering Sprint Planning, Daily Scrum, Sprint Review and Retrospective.",authorId:"fatusa"},
+      {title:"Group Messaging & UX Wireframes",type:"Lecture Notes",detail:"Reference notes for student chat and group announcements.",authorId:"austin"}
+    ]
+  },
+  {
+    id:"scrum-prep",name:"Scrum Certification Prep",subject:"Agile Methodologies",
+    privacy:"Invite-Only",code:"SCRUM99",joined:false,pinned:"Practice exam questions are available in the Educational Resources tab.",
+    members:["instructor","fatusa","austin","lulu"],
+    messages:[{senderId:"instructor",text:"Use this group to share practice questions for the Agile Project Management assessment.",time:"Yesterday"}],
+    resources:[{title:"Agile Manifesto & 12 Principles Sheet",type:"Study Guide",detail:"Quick reference sheet for core Agile values.",authorId:"instructor"}]
+  }
+];
+
+let groups = loadSavedGroups();
+let activeUserId = loadSavedUser() || "victor";
+let currentGroupId = loadSavedCurrentGroup() || "agileminds";
+let toastTimer;
+
+function loadSavedGroups(){
+  try{const raw=localStorage.getItem("studybuddy_demo_groups_v5");if(raw){const parsed=JSON.parse(raw);if(Array.isArray(parsed)&&parsed.length)return parsed;}}catch(e){}
+  return JSON.parse(JSON.stringify(initialGroups));
+}
+function loadSavedUser(){try{return localStorage.getItem("studybuddy_demo_user_v5");}catch(e){return null;}}
+function loadSavedCurrentGroup(){try{return localStorage.getItem("studybuddy_demo_current_v5");}catch(e){return null;}}
+function saveState(){
+  try{
+    localStorage.setItem("studybuddy_demo_groups_v5",JSON.stringify(groups));
+    localStorage.setItem("studybuddy_demo_user_v5",activeUserId);
+    localStorage.setItem("studybuddy_demo_current_v5",currentGroupId);
+  }catch(e){}
+}
+function getUser(id){return roster.find(u=>u.id===id)||roster[0];}
+function getGroup(){return groups.find(g=>g.id===currentGroupId)||groups[0];}
+function esc(value){return String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
+function showToast(message){
+  const el=document.getElementById("toast");el.textContent=message;el.classList.add("show");
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2600);
+}
+function isMobile(){return window.matchMedia("(max-width: 760px)").matches;}
+
+function initUserSelect(){
+  const select=document.getElementById("activeUserSelect");
+  select.innerHTML=roster.map(u=>`<option value="${u.id}">${esc(u.name)} · ${esc(u.role)}</option>`).join("");
+  if(!roster.some(u=>u.id===activeUserId))activeUserId="victor";
+  select.value=activeUserId;
+}
+
+function renderGroupCards(containerId){
+  const container=document.getElementById(containerId);if(!container)return;
+  container.innerHTML="";
+  groups.forEach(group=>{
+    const card=document.createElement("button");card.type="button";
+    card.className="group-card"+(group.id===currentGroupId?" active":"");
+    card.innerHTML=`
+      <div class="group-card-top"><span class="group-card-name">${esc(group.name)}</span><span class="pill ${group.joined?"pill-green":"pill-amber"}">${group.joined?"Joined":"Discover"}</span></div>
+      <div class="group-card-meta"><span>${esc(group.subject)}</span><span>${group.members.length} members</span></div>`;
+    card.addEventListener("click",()=>selectGroup(group.id));
+    container.appendChild(card);
+  });
+}
+function renderGroups(){renderGroupCards("groupListDesktop");renderGroupCards("groupListMobile");}
+
+function selectGroup(id){
+  currentGroupId=id;saveState();renderAll();
+  if(isMobile())showView("chat");
+}
+function joinByCode(inputId,feedbackId){
+  const input=document.getElementById(inputId),feedback=document.getElementById(feedbackId);
+  const code=input.value.trim().toUpperCase();
+  if(!code){feedback.textContent="Enter an invitation code first.";return;}
+  const group=groups.find(g=>g.code.toUpperCase()===code);
+  if(!group){feedback.textContent="Code not found. Please check and try again.";return;}
+  if(!group.members.includes(activeUserId))group.members.push(activeUserId);
+  group.joined=true;currentGroupId=group.id;input.value="";feedback.textContent="";
+  saveState();renderAll();showToast(`You joined ${group.name}.`);
+  if(isMobile())showView("chat");
+}
+function joinCurrentGroup(){
+  const group=getGroup();
+  if(group.joined){showToast("You are already a member of this group.");return;}
+  if(group.privacy==="Invite-Only"){showToast("This group is invite-only. Use its invitation code to join.");showView("groups");return;}
+  if(!group.members.includes(activeUserId))group.members.push(activeUserId);
+  group.joined=true;saveState();renderAll();showToast(`You joined ${group.name}.`);
+}
+
+function renderHeader(){
+  const group=getGroup();
+  document.getElementById("currentGroupTitle").textContent=group.name;
+  document.getElementById("currentGroupDesc").textContent=`${group.subject} · ${group.privacy} group`;
+  document.getElementById("inviteCodeLabel").textContent=`Code: ${group.code}`;
+  document.getElementById("joinCurrentBtn").hidden=group.joined;
+  document.getElementById("joinCurrentBtn").textContent=group.privacy==="Invite-Only"?"Enter invite code":"Join group";
+  document.getElementById("chatCount").textContent=group.messages.length;
+  document.getElementById("memberTabCount").textContent=group.members.length;
+}
+function renderMembers(){
+  const group=getGroup(),list=document.getElementById("memberList"),query=document.getElementById("memberSearch").value.trim().toLowerCase();
+  document.getElementById("memberCountLabel").textContent=`${group.members.length} ${group.members.length===1?"member":"members"}`;
+  if(!group.joined){
+    list.innerHTML='<div class="empty-state"><strong>Join this group to view its members.</strong>Enter the invitation code to become a member and access the directory.</div>';return;
+  }
+  const members=group.members.map(getUser).filter(u=>(u.name+" "+u.role+" "+u.ticket).toLowerCase().includes(query));
+  if(!members.length){list.innerHTML='<div class="empty-state"><strong>No members found.</strong>Try another name or clear your search.</div>';return;}
+  list.innerHTML=members.map(u=>`
+    <article class="member-card">
+      <div class="avatar" style="background:${u.color}">${esc(u.initials)}<span class="avatar-status ${u.status==="away"?"away":""}"></span></div>
+      <div class="member-info"><div class="member-name">${esc(u.name)}${u.id===activeUserId?" (You)":""}</div>
+        <div class="member-meta"><span class="role-tag">${esc(u.role)}</span><span class="member-status ${u.status==="away"?"away":""}">● ${u.status==="away"?"Away":"Online"}</span></div>
+        <div class="member-meta">${esc(u.ticket)}</div>
+      </div>
+    </article>`).join("");
+}
+function renderChat(){
+  const group=getGroup(),list=document.getElementById("messagesList"),form=document.getElementById("messageForm"),input=document.getElementById("messageInput");
+  document.getElementById("pinnedText").textContent=group.pinned;
+  if(!group.joined){
+    list.innerHTML='<div class="empty-state"><strong>You are not a member of this group yet.</strong>Join the group to read messages and participate in the conversation.</div>';
+    form.style.display="none";return;
+  }
+  form.style.display="flex";
+  list.innerHTML=group.messages.map((msg,index)=>{
+    const sender=getUser(msg.senderId),own=msg.senderId===activeUserId;
+    return `<div class="message-row ${own?"own":""}">
+      <div class="avatar" style="background:${sender.color}">${esc(sender.initials)}</div>
+      <div class="message-content"><div class="message-meta"><span class="message-name">${esc(sender.name)}</span><span>${esc(sender.role)}</span><span>${esc(sender.ticket)}</span></div>
+      <div class="message-bubble">${esc(msg.text)}<div class="message-foot"><span>${esc(msg.time)}</span><button class="text-action" type="button" data-pin="${index}">Pin</button></div></div></div>
+    </div>`;
+  }).join("");
+  list.scrollTop=list.scrollHeight;
+}
+function renderResources(){
+  const group=getGroup(),grid=document.getElementById("resourceGrid"),form=document.getElementById("resourceForm");
+  if(!group.joined){form.style.display="none";grid.innerHTML='<div class="empty-state"><strong>Join this group to access resources.</strong>Members can share notes, study guides and useful links here.</div>';return;}
+  form.style.display="grid";
+  if(!group.resources.length){grid.innerHTML='<div class="empty-state"><strong>No resources shared yet.</strong>Be the first to add a study guide or useful link.</div>';return;}
+  grid.innerHTML=group.resources.map((r,i)=>{
+    const author=getUser(r.authorId),url=/^https?:\/\//i.test(r.detail);
+    return `<article class="resource-card"><span class="resource-type">${esc(r.type)}</span><div class="resource-title">${esc(r.title)}</div><div class="resource-detail">${esc(r.detail)}</div><div class="resource-footer"><span>Shared by ${esc(author.name)}</span>${url?`<a class="resource-link" href="${esc(r.detail)}" target="_blank" rel="noopener">Open link ↗</a>`:"<span>Study material</span>"}</div><button class="btn btn-secondary btn-small" type="button" data-share-resource="${i}">Share in group chat</button></article>`;
+  }).join("");
+}
+function renderAll(){renderGroups();renderHeader();renderMembers();renderChat();renderResources();}
+
+function showView(view){
+  document.querySelectorAll(".view").forEach(el=>el.classList.toggle("active",el.id===`${view}View`));
+  document.querySelectorAll(".tab-btn,.mobile-nav button").forEach(btn=>btn.classList.toggle("active",btn.dataset.view===view));
+  if(view==="members")renderMembers();
+  if(view==="resources")renderResources();
+}
+function createGroup(){
+  const name=document.getElementById("newGroupName").value.trim();
+  const subject=document.getElementById("newGroupSubject").value.trim()||"General Study";
+  const privacy=document.getElementById("newGroupPrivacy").value;
+  if(!name){showToast("Please enter a group name.");return;}
+  const code="GRP"+Math.floor(100+Math.random()*900);
+  const id="group-"+Date.now();
+  groups.unshift({id,name,subject,privacy,code,joined:true,pinned:`Welcome to ${name}!`,members:[activeUserId],messages:[{senderId:activeUserId,text:`Created the study group "${name}". Invite code: ${code}`,time:"Just now"}],resources:[]});
+  currentGroupId=id;saveState();renderAll();closeModal();showView("chat");showToast(`Study group created. Invite code: ${code}`);
+}
+function openModal(){document.getElementById("createModal").classList.add("open");document.getElementById("newGroupName").focus();}
+function closeModal(){document.getElementById("createModal").classList.remove("open");}
+function showJoinForCurrent(){
+  const group=getGroup();
+  if(group.privacy==="Invite-Only"){
+    if(isMobile()){
+      showView("groups");
+      document.getElementById("inviteCodeMobile").focus();
+    }else{
+      document.getElementById("inviteCodeDesktop").focus();
+    }
+    showToast("Enter this group's invitation code to join.");
+    return;
+  }
+  joinCurrentGroup();
+}
+function resetDemo(){
+  if(!confirm("Reset the StudyBuddy demo to its original sample data?"))return;
+  try{localStorage.removeItem("studybuddy_demo_groups_v5");localStorage.removeItem("studybuddy_demo_user_v5");localStorage.removeItem("studybuddy_demo_current_v5");}catch(e){}
+  location.reload();
+}
+
+document.getElementById("activeUserSelect").addEventListener("change",e=>{activeUserId=e.target.value;saveState();renderAll();showToast(`Active demo user: ${getUser(activeUserId).name}`);});
+document.getElementById("newGroupBtn").addEventListener("click",openModal);
+document.getElementById("closeModalBtn").addEventListener("click",closeModal);
+document.getElementById("cancelModalBtn").addEventListener("click",closeModal);
+document.getElementById("createGroupForm").addEventListener("submit",e=>{e.preventDefault();createGroup();});
+document.getElementById("createModal").addEventListener("click",e=>{if(e.target.id==="createModal")closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+document.getElementById("joinDesktopBtn").addEventListener("click",()=>joinByCode("inviteCodeDesktop","joinFeedbackDesktop"));
+document.getElementById("joinMobileBtn").addEventListener("click",()=>joinByCode("inviteCodeMobile","joinFeedbackMobile"));
+document.getElementById("joinCurrentBtn").addEventListener("click",showJoinForCurrent);
+document.getElementById("memberSearch").addEventListener("input",renderMembers);
+document.getElementById("messageForm").addEventListener("submit",e=>{
+  e.preventDefault();const input=document.getElementById("messageInput"),value=input.value.trim();if(!value)return;
+  const group=getGroup();if(!group.joined){showToast("Join the group before sending a message.");return;}
+  const time=new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+  group.messages.push({senderId:activeUserId,text:value,time});input.value="";saveState();renderChat();renderHeader();
+});
+document.getElementById("messagesList").addEventListener("click",e=>{
+  const btn=e.target.closest("[data-pin]");if(!btn)return;
+  const msg=getGroup().messages[Number(btn.dataset.pin)];if(!msg)return;
+  getGroup().pinned=`${getUser(msg.senderId).name}: "${msg.text}"`;saveState();renderChat();showToast("Announcement updated.");
+});
+document.getElementById("resourceForm").addEventListener("submit",e=>{
+  e.preventDefault();const title=document.getElementById("resTitle").value.trim(),type=document.getElementById("resType").value,detail=document.getElementById("resDetail").value.trim();
+  if(!title||!detail)return;
+  getGroup().resources.unshift({title,type,detail,authorId:activeUserId});saveState();e.target.reset();renderResources();renderHeader();showToast("Resource added to this group.");
+});
+document.getElementById("resourceGrid").addEventListener("click",e=>{
+  const btn=e.target.closest("[data-share-resource]");if(!btn)return;
+  const resource=getGroup().resources[Number(btn.dataset.shareResource)];if(!resource)return;
+  const time=new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+  getGroup().messages.push({senderId:activeUserId,text:`Shared a resource: ${resource.title}`,time});saveState();showView("chat");renderChat();renderHeader();showToast("Resource shared in group chat.");
+});
+document.querySelectorAll("[data-view]").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.view)));
+window.addEventListener("resize",()=>{if(!isMobile()&&document.getElementById("groupsView").classList.contains("active"))showView("chat");});
+window.resetStudyBuddyDemo=resetDemo;
+
+initUserSelect();
+renderAll();
+showView(isMobile()?"groups":"chat");
+</script>
+</body>
+</html>
